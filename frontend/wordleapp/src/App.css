@@ -18,6 +18,24 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.square{
+  width: 100px;
+  height: 100px;
+  background-color: rgb(26, 26, 26);
+  border: 5px solid rgb(99, 99, 99);
+}
+
+.square_single_row{
+  display: flex;
+  /*grid-template-columns: repeat(6, 50px);*/
+  /*grid-template-rows: repeat(5, 50px); */
+  gap: 5px;
+  padding: 5px;
+}
+
+.square_rows{
+  display: grid;
+}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
