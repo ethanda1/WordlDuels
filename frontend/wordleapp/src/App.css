@@ -30,6 +30,30 @@
   color: white;              /* white text */
   font-weight: bold;         /* bold letters */
 }
+.square-yellow{
+  display:flex;
+  align-items: center;       /* vertically center text */
+  justify-content: center;   /* horizontally center text */
+  width: 100px;
+  height: 100px;
+  background-color: rgb(26, 26, 26);
+  border: 5px solid rgb(99, 99, 99);
+  font-size: 48px;           /* make the letter large */
+  color: rgb(204, 185, 16);              /* white text */
+  font-weight: bold;         /* bold letters */
+}
+.square-green{
+  display:flex;
+  align-items: center;       /* vertically center text */
+  justify-content: center;   /* horizontally center text */
+  width: 100px;
+  height: 100px;
+  background-color: rgb(26, 26, 26);
+  border: 5px solid rgb(99, 99, 99);
+  font-size: 48px;           /* make the letter large */
+  color: rgb(7, 117, 16);              /* white text */
+  font-weight: bold;         /* bold letters */
+}
 
 .square_single_row{
   display: flex;
