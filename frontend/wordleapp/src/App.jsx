@@ -1,59 +1,89 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import './App.css'
 
 
 function App() {
-  const word = 'Crane'
+  const word = 'Sheep'
   const [round, setRound] = useState(1);
+  const [hasWon, sethasWon] = useState(false);
   
   const updateRound = () => {
     setRound(round => round + 1)
 
   }
 
+  const updateGameState = () => {
+    sethasWon(true);
+  }
+
   return (
     <>
+    {hasWon && (
+    <div>
+        YOU WON
+    </div>
+    )}
+   
+
       <div>
-        <Row key={1} isActive = {1 === round} round= {updateRound} answer = {word}/>
-        <Row key={2} isActive = {2 === round} round= {updateRound} answer = {word}/>
-        <Row key={3} isActive = {3 === round} round= {updateRound} answer = {word}/>
-        <Row key={4} isActive = {4 === round} round= {updateRound} answer = {word}/>
-        <Row key={5} isActive = {5 === round} round= {updateRound} answer = {word}/>
-        <Row key={6} isActive = {6 === round} round= {updateRound} answer = {word}/>
+        <Row key={1} isActive = {1 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={2} isActive = {2 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={3} isActive = {3 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={4} isActive = {4 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={5} isActive = {5 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={6} isActive = {6 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
       </div>
     </>
   )
 }
 
-function Square({value}) {
+function Square({value, colorArray}) {
 
   return (
-    value.map((item) => (
-      <div className = "square">
-        {item}
-      </div>
-    ))
+    value.map((item, index) => {
+      if (colorArray[index] === 'green'){
+      return (
+        <div className = "square-green">
+          {item}
+        </div>
+        )
+      }
+      else if (colorArray[index] === 'yellow'){
+        return(
+         <div className = "square-yellow">
+          {item}
+        </div>
+        )
+      }
+      else if (colorArray[index] === 'empty'){
+         return(
+        <div className = "square">
+          {item}
+        </div>
+         )
+      }
+
+})
   );
 }
-function Row({isActive, round, answer}){
+function Row({isActive, round, answer, updateGameState, hasWon}){
 
   const [value, setValue] = useState(['', '', '', '', '']);
   const [index, setIndex] = useState(0); // current input index
   const answerArray= answer.toUpperCase().split('');
-  let answerLetterMap = {
-    //map contains indexs of each letter
-  };
+  const [colorArray, setcolorArray] = useState(['empty', 'empty', 'empty', 'empty' ,'empty'])
 
-  const [colors, setColors] = useState([])
-  for (let i = 0; i < answer.length; i++) {
-    if(!(answerArray[i] in answerLetterMap)){
-      answerLetterMap[answerArray[i]] = [i];
+  const answerLetterMap = useMemo(() => {
+    const map = {};
+    for (let i = 0; i < answerArray.length; i++) {
+      if (!(answerArray[i] in map)) {
+        map[answerArray[i]] = [i];
+      } else {
+        map[answerArray[i]].push(i);
+      }
     }
-    else{
-      answerLetterMap[answerArray[i]].push(i);
-    }
-  }
-  const copy = answerLetterMap
+    return map;
+  }, [answer]);
 
     useEffect(() => {
       if (!isActive){
@@ -75,32 +105,49 @@ function Row({isActive, round, answer}){
         }
 
         if(e.key === 'Enter' && index === 5){
-          round();
-          for(let i=0; i<5; i++){
-            if(value[i] in answerLetterMap){ //checking for green and yellow
-              for(let j=0; j<answerLetterMap[value[i]].length; j++){
-                if(answerLetterMap[value[i]][j] === i){ //checking for green
-                  answerLetterMap[value[i]].splice(j,1); //removes green letter index from map
+          let counter = 0; //keeps track of green squares
+          const newColorArray = ['empty', 'empty', 'empty', 'empty', 'empty']
+          const copy = JSON.parse(JSON.stringify(answerLetterMap)); 
+          // work with copy instead of trying to reset answerLetterMap
+
+          for (let i = 0; i < 5; i++) {
+            if (value[i] in copy) {
+              for (let j = 0; j < copy[value[i]].length; j++) {
+                if (copy[value[i]][j] === i) {
+                  copy[value[i]].splice(j, 1);
+                  newColorArray[i] = 'green';
+                  counter++;
+                  break;
                 }
-                
               }
-              //checks yellow 
-              answerLetterMap[value[i]].splice(0,1); //removes yellow letter
             }
           }
-          answerLetterMap = copy;
+          for (let i = 0; i < 5; i++) {
+            const letter = value[i];
+            if (newColorArray[i] === 'empty' && copy[letter] && copy[letter].length > 0) {
+              newColorArray[i] = 'yellow';
+              copy[letter].splice(0, 1);
+            }
+          }
+          setcolorArray(newColorArray);
+          if (newColorArray.every(color => color === 'green')) {
+            updateGameState(true);
+          }
+          round();
         }
         
       };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
+      if (!hasWon) {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }
+   
     }, [value, index, isActive]);
 
   
   return(
     <div className="square_single_row">
-      <Square value = {value}/>
+      <Square value = {value} colorArray = {colorArray}/>
     </div>
   );
 }
