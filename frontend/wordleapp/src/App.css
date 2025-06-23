@@ -54,6 +54,18 @@
   color: rgb(255, 255, 255);              /* white text */
   font-weight: bold;         /* bold letters */
 }
+.square-gray{
+  display:flex;
+  align-items: center;       /* vertically center text */
+  justify-content: center;   /* horizontally center text */
+  width: 100px;
+  height: 100px;
+  background-color: rgb(99, 99, 99);
+  border: 5px solid rgb(99, 99, 99);
+  font-size: 48px;           /* make the letter large */
+  color: rgb(255, 255, 255);              /* white text */
+  font-weight: bold;         /* bold letters */
+}
 
 .square_single_row{
   display: flex;

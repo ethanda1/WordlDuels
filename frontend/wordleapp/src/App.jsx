@@ -1,12 +1,15 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import './App.css'
-
+import words from '../words.json';
 
 function App() {
   const word = 'Sheep'
   const [round, setRound] = useState(1);
   const [hasWon, sethasWon] = useState(false);
-  
+  const [spellCheck, setspellCheck] = useState(-1);
+
+
+
   const updateRound = () => {
     setRound(round => round + 1)
 
@@ -15,6 +18,13 @@ function App() {
   const updateGameState = () => {
     sethasWon(true);
   }
+  const updateSpellCheck = (boolean) => {
+
+    setspellCheck(boolean);
+  }
+
+
+  console.log(spellCheck)
 
   return (
     <>
@@ -23,15 +33,23 @@ function App() {
         YOU WON
     </div>
     )}
-   
+
+    {spellCheck == 0 && (
+      <div>Not in word list</div>
+    )}
+
+    {round === 7 && !hasWon && (
+      <div>nice try: the word was {word}</div>
+      
+    )}
 
       <div>
-        <Row key={1} isActive = {1 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
-        <Row key={2} isActive = {2 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
-        <Row key={3} isActive = {3 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
-        <Row key={4} isActive = {4 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
-        <Row key={5} isActive = {5 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
-        <Row key={6} isActive = {6 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon}/>
+        <Row key={1} isActive = {1 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
+        <Row key={2} isActive = {2 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
+        <Row key={3} isActive = {3 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
+        <Row key={4} isActive = {4 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
+        <Row key={5} isActive = {5 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
+        <Row key={6} isActive = {6 === round} round= {updateRound} answer = {word} updateGameState  = {updateGameState} hasWon = {hasWon} updateSpellCheck = {updateSpellCheck}/>
       </div>
     </>
   )
@@ -55,6 +73,13 @@ function Square({value, colorArray}) {
         </div>
         )
       }
+      else if (colorArray[index] === 'gray'){
+         return(
+        <div className = "square-gray">
+          {item}
+        </div>
+         )
+      }
       else if (colorArray[index] === 'empty'){
          return(
         <div className = "square">
@@ -62,11 +87,12 @@ function Square({value, colorArray}) {
         </div>
          )
       }
+      
 
 })
   );
 }
-function Row({isActive, round, answer, updateGameState, hasWon}){
+function Row({isActive, round, answer, updateGameState, hasWon, updateSpellCheck}){
 
   const [value, setValue] = useState(['', '', '', '', '']);
   const [index, setIndex] = useState(0); // current input index
@@ -84,6 +110,7 @@ function Row({isActive, round, answer, updateGameState, hasWon}){
     }
     return map;
   }, [answer]);
+
 
     useEffect(() => {
       if (!isActive){
@@ -103,8 +130,15 @@ function Row({isActive, round, answer, updateGameState, hasWon}){
           setValue(newValue);
           setIndex(index - 1);
         }
+        
 
-        if(e.key === 'Enter' && index === 5){
+        const isAWord = words.includes(value.join('').toLowerCase());
+        if (e.key === 'Enter' && index === 5 && !isAWord){
+            updateSpellCheck(0);
+          }
+
+        if(e.key === 'Enter' && index === 5 && isAWord){
+          updateSpellCheck(1);
           let counter = 0; //keeps track of green squares
           const newColorArray = ['empty', 'empty', 'empty', 'empty', 'empty']
           const copy = JSON.parse(JSON.stringify(answerLetterMap)); 
@@ -129,6 +163,13 @@ function Row({isActive, round, answer, updateGameState, hasWon}){
               copy[letter].splice(0, 1);
             }
           }
+
+          for (let i = 0; i < 5; i++) {
+            if (newColorArray[i] === 'empty'){
+              newColorArray[i] = 'gray';
+            }
+          }
+          
           setcolorArray(newColorArray);
           if (newColorArray.every(color => color === 'green')) {
             updateGameState(true);
