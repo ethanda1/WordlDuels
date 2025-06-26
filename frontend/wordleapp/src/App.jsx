@@ -1,18 +1,38 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import './App.css'
 import words from '../words.json';
+import SockJS from 'sockjs-client/dist/sockjs';
+
 
 function App() {
-  const word = 'Sheep'
+  const word = useMemo (() => {
+    return words[Math.floor(Math.random() * words.length)]
+  }, [])
   const [round, setRound] = useState(1);
   const [hasWon, sethasWon] = useState(false);
   const [spellCheck, setspellCheck] = useState(-1);
+  console.log(word);
+  
+  useEffect(()=>{
+     var sock = new SockJS('http://localhost:9999/echo');
+    sock.onopen = function() {
+        console.log('open');
+        sock.send('test');
+    };
 
+    sock.onmessage = function(e) {
+        console.log('message', e.data);
+        sock.close();
+    };
 
+    sock.onclose = function() {
+        console.log('close');
+    };
+
+  }, [])
 
   const updateRound = () => {
     setRound(round => round + 1)
-
   }
 
   const updateGameState = () => {

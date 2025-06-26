@@ -1,14 +1,14 @@
-     const express = require('express');
-     const app = express();
-     const port = 3000; 
+var http = require('http');
+var sockjs = require('sockjs');
 
-     app.get('/', (req, res) => {
-       res.send('Hello World!');
-     });
+var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
+echo.on('connection', function(conn) {
+    conn.on('data', function(message) {
+        conn.write(message);
+    });
+    conn.on('close', function() {});
+});
 
-
-
-
-     app.listen(port, () => {
-       console.log(`Server listening at http://localhost:${port}`);
-     });
+var server = http.createServer();
+echo.installHandlers(server, {prefix:'/echo'});
+server.listen(9999, '0.0.0.0');
