@@ -14,6 +14,7 @@
     "nspell": "^2.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2",
     "sockjs-client": "^1.6.1",
     "spell-checker-js": "^1.2.6",
     "typo-js": "^1.2.5"
