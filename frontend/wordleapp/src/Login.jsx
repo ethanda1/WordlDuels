@@ -2,23 +2,19 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
 
-function Login({ setUsername, sock }) {
+function Login({ setUsername, sock, roomCode }) {
   const [usernameInput, setUsernameInput] = useState('');
   const [roomCodeInput, setRoomCodeInput] = useState('');
+
   const navigate = useNavigate();
+  
 
-  useEffect(() => {
-    if (!sock) return;
+  useEffect(()=>{
+    navigate(`${roomCode}`)
+  },[roomCode])
 
-    sock.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      if (data.type === 'room_code') {
-        console.log('Received room code:', data.room_code);
-        navigate(`/${data.room_code}`);
-      }
-    };
-  }, [sock, navigate]);
 
+  //joining room
   const handleJoin = (e) => {
     e.preventDefault();
     if (!usernameInput || !roomCodeInput) return;
@@ -27,15 +23,16 @@ function Login({ setUsername, sock }) {
 
     sock.send(
       JSON.stringify({
-        type: 'join_room',
+        type: 'register',
         username: usernameInput,
         roomCode: roomCodeInput,
       })
     );
 
-    navigate(`/${roomCodeInput}`);
+    
   };
-
+  
+  //create room
   const handleCreate = (e) => {
     e.preventDefault();
     if (!usernameInput) return;
@@ -44,12 +41,10 @@ function Login({ setUsername, sock }) {
 
     sock.send(
       JSON.stringify({
-        type: 'create_room',
+        type: 'register',
         username: usernameInput,
       })
     );
-    
-  
   };
 
   return (

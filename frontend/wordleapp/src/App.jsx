@@ -18,6 +18,25 @@ function App() {
     };
   }, []);
   
+  useEffect(() => {
+      if (!sock) return;
+  
+      sock.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+
+        //create room
+        if (data.type === 'room_code') {
+          console.log('Received room code:', data.room_code)
+          setRoomCode(data.room_code);
+        }
+
+        //joining room
+        if (data.type === 'user_joining') {
+          console.log('Received room code:', data.room_code)
+          setRoomCode(data.room_code);
+        }
+      };
+    }, [sock]);
 
   return (
     <BrowserRouter>
@@ -28,6 +47,7 @@ function App() {
             <Login
               setUsername={setUsername}
               sock={sock}
+              roomCode = {roomCode}
             />
           }
         />
