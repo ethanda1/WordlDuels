@@ -3,11 +3,13 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import SockJS from 'sockjs-client/dist/sockjs';
 import Login from './Login';
 import Room from './Room';
+import Game from './Game';
 
 function App() {
   const [username, setUsername] = useState('');
   const [sock, setSock] = useState(null);
   const [roomCode, setRoomCode] = useState('');
+  const [usernames, setUsernames] = useState('');
 
   useEffect(() => {
     const sock = new SockJS('http://localhost:9999/echo');
@@ -28,6 +30,7 @@ function App() {
         if (data.type === 'room_code') {
           console.log('Received room code:', data.room_code)
           setRoomCode(data.room_code);
+          setUsernames([data.creator])
         }
 
         //joining room
@@ -35,6 +38,14 @@ function App() {
           console.log('Received room code:', data.room_code)
           setRoomCode(data.room_code);
         }
+
+        //updating usernames
+        if (data.type === 'user_joining_update') {
+          console.log('People in party: ', data.message)
+          setUsernames(data.message)
+        }
+
+        
       };
     }, [sock]);
 
@@ -51,7 +62,24 @@ function App() {
             />
           }
         />
-        <Route path="/:roomCode" element={<Room sock={sock} username={username} />} />
+        <Route 
+          path="/:roomCode" 
+          element={
+            <Room 
+              sock={sock} 
+              username={username} 
+              usernames = {usernames}
+            />
+          } 
+        />
+        <Route 
+          path="/game/:roomCode" 
+          element={
+            <Game
+              sock={sock} 
+              username={username} 
+              usernames = {usernames}/>
+            } />
       </Routes>
     </BrowserRouter>
   );

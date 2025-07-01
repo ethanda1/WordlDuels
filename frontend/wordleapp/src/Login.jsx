@@ -28,8 +28,6 @@ function Login({ setUsername, sock, roomCode }) {
         roomCode: roomCodeInput,
       })
     );
-
-    
   };
   
   //create room

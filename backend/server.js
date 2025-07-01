@@ -65,19 +65,20 @@ echo.on('connection', function(conn) {
                     }
                 )
 
-                // usernames = rooms[data.roomCode].map(u => u.username);
+                //let usernames = rooms[data.roomCode].map(u => u.username);
 
                 let usernames = []
-                if (data.roomCode in rooms){
-                    for(let user in rooms[roomcode]){
-                        usernames.push(user['username']);
+                if (roomcode in rooms){
+                    for(let user of rooms[roomcode]){
+                        console.log('adding user' + user.username)
+                        usernames.push(user.username);
                     }
+                    console.log('people in room: '+ roomcode +  ': ' + usernames)
                     conn.write(JSON.stringify({
-                        type: 'register_awk',
-                        usernames: usernames,
-
+                        type: 'user_joining',
+                        room_code: roomcode
                     }));
-                    
+                    broadcastRoom(roomcode, 'user_joining_update', usernames)
                 }
 
                 else{
@@ -164,8 +165,8 @@ echo.on('connection', function(conn) {
 
 function broadcastRoom(roomID, type, message){    
     if (roomID in rooms){
-        for(let user in rooms[roomID]){
-            user['connection'].write(JSON.stringify({
+        for(let user of rooms[roomID]){
+            user.conn.write(JSON.stringify({
                 type: type,
                 message: message,
             }));
