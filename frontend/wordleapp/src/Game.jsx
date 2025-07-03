@@ -1,11 +1,8 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import './App.css'
-import words from '../words.json';
+import words from '../words.json'
 
-function Game({username}) {
-  const word = useMemo (() => {
-    return words[Math.floor(Math.random() * words.length)]
-  }, [])
+function Game({sock, username, word}) {
   const [round, setRound] = useState(1);
   const [hasWon, sethasWon] = useState(false);
   const [spellCheck, setspellCheck] = useState(-1);
@@ -119,6 +116,7 @@ function Row({isActive, round, answer, updateGameState, hasWon, updateSpellCheck
         return;
       }
       const handleKeyDown = (e) => {
+   
         const letter = e.key.toUpperCase();
         if (letter.match(/^[A-Z]$/) && index < 5) {
           const newValue = [...value];
@@ -140,6 +138,7 @@ function Row({isActive, round, answer, updateGameState, hasWon, updateSpellCheck
           }
 
         if(e.key === 'Enter' && index === 5 && isAWord){
+    
           updateSpellCheck(1);
           let counter = 0; //keeps track of green squares
           const newColorArray = ['empty', 'empty', 'empty', 'empty', 'empty']
@@ -173,8 +172,18 @@ function Row({isActive, round, answer, updateGameState, hasWon, updateSpellCheck
           }
           
           setcolorArray(newColorArray);
+          
+          //sending colors to backend
+          sock.send(
+            JSON.stringify({
+              type: 'square_colors',
+              colors: newColorArray
+            })
+          );
+          //todo: backend stuff
           if (newColorArray.every(color => color === 'green')) {
             updateGameState(true);
+            
           }
           round();
         }

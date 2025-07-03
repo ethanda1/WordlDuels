@@ -3,17 +3,27 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-function Room({ sock, setUsername, usernames }) {
+function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
     const navigate = useNavigate();
     const { roomCode } = useParams();
     const [players, setPlayers] = useState([]);
     const [copied, setCopied] = useState(false);
     
+    useEffect(()=> {
+        if (gameStarted){
+            navigate(`/game/${roomCode}`);
+        }
+    }, [gameStarted])
     
     const handlePlay = () => {
         // In a real app, this would emit a socket event to start the game
         console.log('Starting game...');
-        navigate(`/game/${roomCode}`);
+        sock.send(
+            JSON.stringify({
+                type: 'start_game',
+                roomcode: roomCode
+            })
+        );
     };
     
     const copyToClipboard = () => {
@@ -63,13 +73,15 @@ function Room({ sock, setUsername, usernames }) {
             </div>
             
             <div className="action-section">
+                {isHost && (  
                 <button 
                     className="play-button"
                     onClick={handlePlay}
                     disabled={usernames.length < 2}
                 >
                     Start Game
-                </button>
+                </button>)}
+              
                 {usernames.length < 2 && (
                     <p className="min-players-warning">Need at least 2 players to start</p>
                 )}

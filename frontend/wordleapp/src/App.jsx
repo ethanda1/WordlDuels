@@ -10,6 +10,9 @@ function App() {
   const [sock, setSock] = useState(null);
   const [roomCode, setRoomCode] = useState('');
   const [usernames, setUsernames] = useState('');
+  const [word, setWord] = useState('');
+  const [isHost, setisHost] = useState(false);
+  const [gameStarted, setgameStarted] = useState(false);
 
   useEffect(() => {
     const sock = new SockJS('http://localhost:9999/echo');
@@ -30,13 +33,16 @@ function App() {
         if (data.type === 'room_code') {
           console.log('Received room code:', data.room_code)
           setRoomCode(data.room_code);
-          setUsernames([data.creator])
+          setUsernames([data.creator]);
+          setWord(data.word);
+          setisHost(true);
         }
 
         //joining room
         if (data.type === 'user_joining') {
           console.log('Received room code:', data.room_code)
           setRoomCode(data.room_code);
+          setWord(data.word);
         }
 
         //updating usernames
@@ -44,7 +50,10 @@ function App() {
           console.log('People in party: ', data.message)
           setUsernames(data.message)
         }
-
+        
+        if (data.type === 'start_game'){
+          setgameStarted(true);
+        }
         
       };
     }, [sock]);
@@ -69,6 +78,8 @@ function App() {
               sock={sock} 
               username={username} 
               usernames = {usernames}
+              isHost = {isHost}
+              gameStarted = {gameStarted}
             />
           } 
         />
@@ -78,8 +89,11 @@ function App() {
             <Game
               sock={sock} 
               username={username} 
-              usernames = {usernames}/>
-            } />
+              usernames = {usernames}
+              word = {word}
+            />
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );

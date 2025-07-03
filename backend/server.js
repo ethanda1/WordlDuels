@@ -1,26 +1,28 @@
+
+const words = require('./words.json');
 var http = require('http');
 var sockjs = require('sockjs');
 
 var echo = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
 
-// let usernames = [];
 let rooms = {};
 
 // rooms = {
 //     'roomid': [
-//            {
-//         'username': 'asdjadfj',
-//         'connection': conn
-//     }],
+//        {
+//         username: 'username',
+//         conn: conn,
+//         word: 'word',
+//          state : [[T,T,3,4,5],[a,2,3,4,5],[a,2,3,4,5],[a,2,3,4,5],[a,2,3,4,5]]
+//       }],
 // }
 
 echo.on('connection', function(conn) {
     console.log(`New connection: ${conn.id}`);
-    // suggestion: (different for each conn)
+
     let username = null;
     let roomcode = null;
 
-    
     conn.on('data', function(message) {
         console.log(`Received raw message: ${message}`);
 
@@ -34,22 +36,7 @@ echo.on('connection', function(conn) {
         }
 
         console.log('Parsed data:', data);
-
-        // if (data.username) {
-        //     usernames.push(data.username);
-        //     console.log('Updated usernames:', usernames);
-        // }
-
-        // if (data.type === 'register') {
-        // get the username from the data, set username = data.username
-
-        // example register message
-        // {
-        //     type: 'register',
-        //     username: 'Caleb',
-        //     roomCode?: ''
-        // }
-
+    
         if(data.type === 'register') {
             // roomcode = data.roomCode
             username = data.username
@@ -61,7 +48,8 @@ echo.on('connection', function(conn) {
                 rooms[roomcode].push(
                     {
                         username: data.username,
-                        conn: conn
+                        conn: conn,
+                        word: rooms[roomcode][0].word
                     }
                 )
 
@@ -76,7 +64,9 @@ echo.on('connection', function(conn) {
                     console.log('people in room: '+ roomcode +  ': ' + usernames)
                     conn.write(JSON.stringify({
                         type: 'user_joining',
-                        room_code: roomcode
+                        room_code: roomcode,
+                        word: rooms[roomcode][0].word,
+                        conn: conn.id
                     }));
                     broadcastRoom(roomcode, 'user_joining_update', usernames)
                 }
@@ -88,17 +78,13 @@ echo.on('connection', function(conn) {
                     }));
                 }
                 console.log(rooms);
-
-                // conn.write(JSON.stringify({
-                //     type: 'user_joined',
-                //     message: 'room joined',
-                //     user: data.usernameInput
-                // }));
             }
 
             //creating room
             else{
+            
                 roomcode = generateRoomCode();
+                //try again if roomcode is already in room
                 while (roomcode in rooms) {
                     console.log(`Room code collision: ${roomCode}. Generating a new one.`);
                     roomcode = generateRoomCode();
@@ -106,7 +92,8 @@ echo.on('connection', function(conn) {
                 rooms[roomcode] = [
                     {
                         username: data.username,
-                        conn: conn
+                        conn: conn,
+                        word: generateWord()
                     }
                 ];
                 console.log(`Created room ${roomcode} with conn: ${conn.id}`);
@@ -116,42 +103,29 @@ echo.on('connection', function(conn) {
                     type: 'room_code',
                     room_code: roomcode,
                     message: 'room created',
-                    creator: data.username
+                    creator: data.username,
+                    word: rooms[roomcode][0].word
                 }));
+                console.log('word:', rooms[roomcode][0].word);
             }
+        }
+
+        //syncing games at start
+        else if (data.type === 'start_game') {
+            console.log('starting game')
+            broadcastRoom(data.roomcode, 'start_game', 'game starting')
+        }
+        else if (data.type === 'square_colors') {
+            console.log('receiving colors :', data.colors)
+            updateSquare(data.roomcode, 'update_row', data.colors, conn.id);
+        }
+
+        else if (data.type === 'update_square'){
 
 
         }
-        // if (data.type === 'create_room') {
-        //     let roomCode = generateRoomCode();
-        //     while (roomCode in rooms) {
-        //         console.log(`Room code collision: ${roomCode}. Generating a new one.`);
-        //         roomCode = generateRoomCode();
-        //     }
-
-        //     rooms[roomCode] = [conn];
-        //     console.log(`Created room ${roomCode} with user: ${data.username}`);
-        //     console.log('Current rooms:', rooms);
-            
-
-        //     conn.write(JSON.stringify({
-        //         type: 'room_code',
-        //         room_code: roomCode,
-        //         message: 'room created',
-        //         creator: data.username
-        //     }));
-        // } 
         
-        // if(data.type === 'join_room') {
-        //     // roomcode = data.roomCode
-        //     rooms[data.roomCode].push(conn);
-        //     conn.write(JSON.stringify({
-        //         type: 'user_joining',
-        //         message: 'room joined',
-        //         user: data.usernameInput
-        //     }));
-        // }
-
+        //catching unhandled data types
         else {
             console.log(`Unhandled data type: ${data.type}`);
         }
@@ -175,6 +149,19 @@ function broadcastRoom(roomID, type, message){
     return;
 }
 
+function updateSquare(roomID, type, colors, connID){    
+    if (roomID in rooms){
+        for(let user of rooms[roomID]){
+            user.conn.write(JSON.stringify({
+                type: type,
+                colors: colors,
+                connID: connID
+            }));
+        }
+    }
+    return;
+}
+
 function generateRoomCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let code = '';
@@ -182,6 +169,16 @@ function generateRoomCode() {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return code;
+}
+
+function generateWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex];
+}
+function updateBoardState(roomID, conn){
+
+
+
 }
 
 var server = http.createServer();
