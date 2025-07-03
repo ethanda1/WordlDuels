@@ -11,9 +11,9 @@ let rooms = {};
 //     'roomid': [
 //        {
 //         username: 'username',
+//         userID :  'xxxxxx',
 //         conn: conn,
 //         word: 'word',
-//          state : [[T,T,3,4,5],[a,2,3,4,5],[a,2,3,4,5],[a,2,3,4,5],[a,2,3,4,5]]
 //       }],
 // }
 
@@ -45,9 +45,11 @@ echo.on('connection', function(conn) {
             //joining room
             if(data.roomCode){
                 roomcode = data.roomCode
+                let UUID = getUniqueUserID(roomcode)
                 rooms[roomcode].push(
                     {
                         username: data.username,
+                        userID: UUID,
                         conn: conn,
                         word: rooms[roomcode][0].word
                     }
@@ -55,20 +57,22 @@ echo.on('connection', function(conn) {
 
                 //let usernames = rooms[data.roomCode].map(u => u.username);
 
-                let usernames = []
+                let users = {}
                 if (roomcode in rooms){
                     for(let user of rooms[roomcode]){
                         console.log('adding user' + user.username)
-                        usernames.push(user.username);
+                        //usernames.push(user.username);
+                        users[user.userID] = user.username
                     }
-                    console.log('people in room: '+ roomcode +  ': ' + usernames)
+                    console.log('people in room: '+ roomcode +  ': ' + users)
                     conn.write(JSON.stringify({
                         type: 'user_joining',
                         room_code: roomcode,
                         word: rooms[roomcode][0].word,
-                        conn: conn.id
+                        conn: conn.id,
+                        userID: UUID
                     }));
-                    broadcastRoom(roomcode, 'user_joining_update', usernames)
+                    broadcastRoom(roomcode, 'user_joining_update', users)
                 }
 
                 else{
@@ -89,13 +93,17 @@ echo.on('connection', function(conn) {
                     console.log(`Room code collision: ${roomCode}. Generating a new one.`);
                     roomcode = generateRoomCode();
                 }
+                rooms[roomcode] = [];
+                let UUID = getUniqueUserID(roomcode)
                 rooms[roomcode] = [
                     {
                         username: data.username,
+                        userID: UUID,
                         conn: conn,
                         word: generateWord()
                     }
                 ];
+
                 console.log(`Created room ${roomcode} with conn: ${conn.id}`);
                 console.log('Current rooms:', rooms);
 
@@ -104,7 +112,8 @@ echo.on('connection', function(conn) {
                     room_code: roomcode,
                     message: 'room created',
                     creator: data.username,
-                    word: rooms[roomcode][0].word
+                    word: rooms[roomcode][0].word,
+                    userID: UUID
                 }));
                 console.log('word:', rooms[roomcode][0].word);
             }
@@ -117,7 +126,7 @@ echo.on('connection', function(conn) {
         }
         else if (data.type === 'square_colors') {
             console.log('receiving colors :', data.colors)
-            updateSquare(data.roomcode, 'update_row', data.colors, conn.id);
+            updateSquare(data.roomcode, 'update_row', data.colors, data.uuid);
         }
 
         else if (data.type === 'update_square'){
@@ -149,13 +158,13 @@ function broadcastRoom(roomID, type, message){
     return;
 }
 
-function updateSquare(roomID, type, colors, connID){    
+function updateSquare(roomID, type, colors, uuid){    
     if (roomID in rooms){
         for(let user of rooms[roomID]){
             user.conn.write(JSON.stringify({
                 type: type,
                 colors: colors,
-                connID: connID
+                uuid: uuid
             }));
         }
     }
@@ -171,15 +180,21 @@ function generateRoomCode() {
     return code;
 }
 
+function getUniqueUserID(roomID) {
+    let userID;
+    let isUnique = false;
+    while (!isUnique) {
+        userID = generateRoomCode();
+        isUnique = !rooms[roomID].some(user => user.userID === userID);
+    }
+    return userID;
+}
+
 function generateWord() {
     const randomIndex = Math.floor(Math.random() * words.length);
     return words[randomIndex];
 }
-function updateBoardState(roomID, conn){
 
-
-
-}
 
 var server = http.createServer();
 echo.installHandlers(server, { prefix: '/echo' });
