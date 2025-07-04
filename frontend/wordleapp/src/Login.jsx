@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './css/Login.css';
 import { useNavigate } from 'react-router-dom';
 
-function Login({ setUsername, sock, roomCode }) {
+function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
   const [usernameInput, setUsernameInput] = useState('');
   const [roomCodeInput, setRoomCodeInput] = useState('');
 
@@ -95,6 +95,8 @@ function Login({ setUsername, sock, roomCode }) {
             <i className="fas fa-sign-in-alt"></i>
             Join Room
           </button>
+
+          <div className = "invalid-msg">{invalidRoomcodeMsg}</div>
 
           <div className="divider">or</div>
 

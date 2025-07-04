@@ -43,8 +43,17 @@ echo.on('connection', function(conn) {
 
             console.log(data.roomCode)
             //joining room
+            
             if(data.roomCode){
+                
                 roomcode = data.roomCode
+                if (!(roomcode in rooms)){
+                    conn.write(JSON.stringify({
+                        type: 'invalid_roomcode',
+                        message: 're-enter roomcode',
+                    }));
+                return;
+                }
                 let UUID = getUniqueUserID(roomcode)
                 rooms[roomcode].push(
                     {
@@ -75,12 +84,6 @@ echo.on('connection', function(conn) {
                     broadcastRoom(roomcode, 'user_joining_update', users)
                 }
 
-                else{
-                    conn.write(JSON.stringify({
-                        type: 'invalid_roomcode',
-                        message: 're-enter roomcode',
-                    }));
-                }
                 console.log(rooms);
             }
 
@@ -124,15 +127,24 @@ echo.on('connection', function(conn) {
             console.log('starting game')
             broadcastRoom(data.roomcode, 'start_game', 'game starting')
         }
+
+        //broacasting guesses to room
         else if (data.type === 'square_colors') {
             console.log('receiving colors :', data.colors)
             updateSquare(data.roomcode, 'update_row', data.colors, data.uuid);
         }
 
-        else if (data.type === 'update_square'){
-
-
+        //syncing game end
+        else if (data.type === 'game_end'){
+            broadcastRoom(data.roomcode, 'end_game', data.uuid)
         }
+
+        //restarting game
+        else if (data.type === 'play-again'){
+            broadcastRoom(data.roomcode, 'play_again', generateWord())
+        }
+
+        
         
         //catching unhandled data types
         else {

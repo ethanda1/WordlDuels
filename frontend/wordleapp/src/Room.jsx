@@ -14,6 +14,8 @@ function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
             navigate(`/game/${roomCode}`);
         }
     }, [gameStarted])
+
+  
     
     const handlePlay = () => {
         // In a real app, this would emit a socket event to start the game

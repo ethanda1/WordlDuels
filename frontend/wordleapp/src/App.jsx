@@ -17,10 +17,15 @@ function App() {
   const [gameStarted, setgameStarted] = useState(false);
   const [colorArray, setcolorArray] = useState([]);
   const [userUpdateColor, setUserUpdateColor] = useState();
+  const [invalidRoomcodeMsg, setinvalidRoomcodeMsg] = useState('')
+  const [gameEnding, setgameEnding] = useState(false);
+  const [winner, setWinner] = useState(''); //winner's UUID
+  const [playAgain, setplayAgain] = useState(false);
 
   useEffect(() => {
     const sock = new SockJS('http://localhost:9999/echo');
     setSock(sock);
+
 
     return () => {
       sock.close();
@@ -68,7 +73,22 @@ function App() {
         if (data.type === 'start_game'){
           setgameStarted(true);
         }
+
+        if (data.type === 'invalid_roomcode'){
+          setinvalidRoomcodeMsg('Invalid room code, please try again')
+        }
         
+        if (data.type === 'end_game'){
+          setgameEnding(true);
+          setWinner(data.message)
+        }
+        if (data.type === 'play_again'){
+          setWord(data.message);
+          setgameStarted(false);
+          setgameEnding(false);
+          setWinner('')
+          setcolorArray([])
+        }
       };
     }, [sock]);
 
@@ -82,6 +102,7 @@ function App() {
               setUsername={setUsername}
               sock={sock}
               roomCode = {roomCode}
+              invalidRoomcodeMsg = {invalidRoomcodeMsg}
             />
           }
         />
@@ -109,6 +130,10 @@ function App() {
               colorArray = {colorArray}
               userUpdateColor = {userUpdateColor}
               roomCode = {roomCode}
+              gameEnding = {gameEnding}
+              winner = {winner} //UUID of winner
+              isHost = {isHost}
+              gameStarted={gameStarted}
             />
           } 
         />

@@ -1,16 +1,26 @@
 import React, {useState, useEffect, useMemo} from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/Game.css';
 import words from '../words.json'
 
-function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, roomCode}) {
+function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, roomCode, winner, gameEnding, isHost, gameStarted}) {
   const [round, setRound] = useState(1);
   const [hasWon, sethasWon] = useState(false);
   const [spellCheck, setspellCheck] = useState(-1);
   const [opponentBoards, setOpponentBoards] = useState({});
+  const navigate = useNavigate();
 
-  console.log(word);
-  console.log(users);
-  console.log('updating colors...: '+ colorArray+ 'for user: ' +userUpdateColor);
+  console.log('haswon' + hasWon);
+
+
+
+
+
+  useEffect(()=> {
+        if (!gameStarted){
+            navigate(`/${roomCode}`);
+        }
+    }, [gameStarted])
 
   // Initialize opponent boards when users change
   useEffect(() => {
@@ -50,6 +60,16 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
   const updateSpellCheck = (boolean) => {
     setspellCheck(boolean);
   }
+  
+  const handlePlayAgain = () => {
+    sock.send(
+      JSON.stringify({
+        type: 'play-again',
+        roomcode: roomCode
+    }))
+      
+
+  }
 
   console.log(spellCheck)
 
@@ -66,13 +86,22 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
             <p>Waiting for opponents...</p>
           </div>
         ) : (
-          <div className="opponents-container">
+         <div className="opponents-container">
             {Object.keys(opponentBoards).map(userUuid => (
+              winner === userUuid ? (  
               <OpponentBoard 
-                key={userUuid}
-                username={opponentBoards[userUuid].username}
-                rows={opponentBoards[userUuid].rows}
-              />
+                  key={userUuid}
+                  username={opponentBoards[userUuid].username}
+                  rows={opponentBoards[userUuid].rows}
+                  hasWon={true}
+                />) : (
+                <OpponentBoard 
+                  key={userUuid}
+                  username={opponentBoards[userUuid].username}
+                  rows={opponentBoards[userUuid].rows}
+                  hasWon={false}
+                />
+              )
             ))}
           </div>
         )}
@@ -83,7 +112,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
         <div className="game-status">
           {hasWon && (
             <div className="win-message">
-              🎉 YOU WON! 🎉
+              You won!
             </div>
           )}
 
@@ -91,25 +120,49 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
             <div className="spell-check-error">Not in word list</div>
           )}
 
-          {round === 7 && !hasWon && (
-            <div className="game-over-message">Game Over! The word was "{word}"</div>
+          {round === 7 && (!hasWon) && (
+            <div className="game-over-message">You lost</div>
           )}
+
+          {gameEnding && (!hasWon) && (
+            <div className="game-over-message"> {users[winner]} won. The word was "{word}"</div>
+          )}
+
+
         </div>
 
         <div className="game-board">
-          <Row key={1} uuid={uuid} sock={sock} roomCode={roomCode} isActive={1 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={1}/>
-          <Row key={2} uuid={uuid} sock={sock} roomCode={roomCode} isActive={2 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={2}/>
-          <Row key={3} uuid={uuid} sock={sock} roomCode={roomCode} isActive={3 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={3}/>
-          <Row key={4} uuid={uuid} sock={sock} roomCode={roomCode} isActive={4 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={4}/>
-          <Row key={5} uuid={uuid} sock={sock} roomCode={roomCode} isActive={5 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={5}/>
-          <Row key={6} uuid={uuid} sock={sock} roomCode={roomCode} isActive={6 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={6}/>
+          <Row key={1} uuid={uuid} sock={sock} roomCode={roomCode} isActive={1 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={1} gameEnding = {gameEnding}/>
+          <Row key={2} uuid={uuid} sock={sock} roomCode={roomCode} isActive={2 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={2} gameEnding = {gameEnding}/>
+          <Row key={3} uuid={uuid} sock={sock} roomCode={roomCode} isActive={3 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={3} gameEnding = {gameEnding}/>
+          <Row key={4} uuid={uuid} sock={sock} roomCode={roomCode} isActive={4 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={4} gameEnding = {gameEnding}/>
+          <Row key={5} uuid={uuid} sock={sock} roomCode={roomCode} isActive={5 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={5} gameEnding = {gameEnding}/>
+          <Row key={6} uuid={uuid} sock={sock} roomCode={roomCode} isActive={6 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={6} gameEnding = {gameEnding}/>
         </div>
+
+   
+
       </div>
+      
+           {isHost && gameEnding &&(
+            <div className = 'play-again-container'>  
+              <button 
+                className='play-again'
+                onClick={handlePlayAgain}
+              >
+                Play Again
+              </button>
+            </div>
+
+          
+        )}
+        
     </div>
   )
 }
 
-function OpponentBoard({username, rows}) {
+
+function OpponentBoard({username, rows, hasWon}) {
   const emptyRow = ['empty', 'empty', 'empty', 'empty', 'empty'];
   
   // Create 6 rows total, fill with completed rows first, then empty rows
@@ -119,7 +172,7 @@ function OpponentBoard({username, rows}) {
   }
 
   return (
-    <div className="opponent-board">
+    <div className={`opponent-board ${hasWon ? 'has-won' : ''}`}>
       <div className="opponent-username">
         {username}
       </div>
@@ -173,7 +226,7 @@ function Square({value, colorArray}) {
   );
 }
 
-function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, updateSpellCheck, rowIndex}){
+function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, sethasWon, updateSpellCheck, rowIndex, gameEnding}){
   const [value, setValue] = useState(['', '', '', '', '']);
   const [index, setIndex] = useState(0); // current input index
   const answerArray= answer.toUpperCase().split('');
@@ -195,6 +248,7 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
     if (!isActive){
       return;
     }
+    
     const handleKeyDown = (e) => {
       const letter = e.key.toUpperCase();
       if (letter.match(/^[A-Z]$/) && index < 5) {
@@ -267,11 +321,23 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
         round();
       }
     };
-    if (!hasWon) {
+    
+    if (hasWon) {
+      sock.send(
+        JSON.stringify({
+          type: 'game_end',
+          uuid: uuid,
+          roomcode: roomCode
+        })
+      );
+    }
+    sethasWon(false);
+    if (!gameEnding){
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [value, index, isActive]);
+
+  }, [value, index, isActive, gameEnding]);
 
   return(
     <div className="square_single_row" style={{'--row-index': rowIndex}}>
