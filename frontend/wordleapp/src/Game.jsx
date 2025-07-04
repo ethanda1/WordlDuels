@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import './App.css'
+import './css/Game.css';
 import words from '../words.json'
 
 function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, roomCode}) {
@@ -55,9 +55,31 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
 
   return (
     <div className="game-container">
+      {/* Player Name - Top Left */}
+      <div className="player-info">{username}</div>
+
+      {/* Opponents Section */}
+      <div className="opponents-section">
+        {Object.keys(opponentBoards).length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">👥</div>
+            <p>Waiting for opponents...</p>
+          </div>
+        ) : (
+          <div className="opponents-container">
+            {Object.keys(opponentBoards).map(userUuid => (
+              <OpponentBoard 
+                key={userUuid}
+                username={opponentBoards[userUuid].username}
+                rows={opponentBoards[userUuid].rows}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Main Game Section */}
       <div className="game-main">
-        <div className="player-info">{username} is playing</div>
-        
         <div className="game-status">
           {hasWon && (
             <div className="win-message">
@@ -75,32 +97,13 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
         </div>
 
         <div className="game-board">
-          <Row key={1} uuid={uuid} sock={sock} roomCode={roomCode} isActive={1 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
-          <Row key={2} uuid={uuid} sock={sock} roomCode={roomCode} isActive={2 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
-          <Row key={3} uuid={uuid} sock={sock} roomCode={roomCode} isActive={3 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
-          <Row key={4} uuid={uuid} sock={sock} roomCode={roomCode} isActive={4 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
-          <Row key={5} uuid={uuid} sock={sock} roomCode={roomCode} isActive={5 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
-          <Row key={6} uuid={uuid} sock={sock} roomCode={roomCode} isActive={6 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck}/>
+          <Row key={1} uuid={uuid} sock={sock} roomCode={roomCode} isActive={1 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={1}/>
+          <Row key={2} uuid={uuid} sock={sock} roomCode={roomCode} isActive={2 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={2}/>
+          <Row key={3} uuid={uuid} sock={sock} roomCode={roomCode} isActive={3 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={3}/>
+          <Row key={4} uuid={uuid} sock={sock} roomCode={roomCode} isActive={4 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={4}/>
+          <Row key={5} uuid={uuid} sock={sock} roomCode={roomCode} isActive={5 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={5}/>
+          <Row key={6} uuid={uuid} sock={sock} roomCode={roomCode} isActive={6 === round} round={updateRound} answer={word} updateGameState={updateGameState} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={6}/>
         </div>
-      </div>
-
-      {/* Opponents Sidebar */}
-      <div className="opponents-sidebar">
-        <h3>Opponents</h3>
-        {Object.keys(opponentBoards).length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">👥</div>
-            <p>Waiting for opponents...</p>
-          </div>
-        ) : (
-          Object.keys(opponentBoards).map(userUuid => (
-            <OpponentBoard 
-              key={userUuid}
-              username={opponentBoards[userUuid].username}
-              rows={opponentBoards[userUuid].rows}
-            />
-          ))
-        )}
       </div>
     </div>
   )
@@ -170,7 +173,7 @@ function Square({value, colorArray}) {
   );
 }
 
-function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, updateSpellCheck}){
+function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, updateSpellCheck, rowIndex}){
   const [value, setValue] = useState(['', '', '', '', '']);
   const [index, setIndex] = useState(0); // current input index
   const answerArray= answer.toUpperCase().split('');
@@ -271,7 +274,7 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
   }, [value, index, isActive]);
 
   return(
-    <div className="square_single_row">
+    <div className="square_single_row" style={{'--row-index': rowIndex}}>
       <Square value={value} colorArray={colorArray}/>
     </div>
   );

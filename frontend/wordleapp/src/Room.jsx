@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import './App.css';
+import './css/Room.css'; 
 
 function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
     const navigate = useNavigate();

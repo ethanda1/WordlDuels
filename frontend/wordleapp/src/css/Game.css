@@ -1,0 +1,497 @@
+/* Word Duels Game Screen - Cohesive Color Scheme */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;600;700&display=swap');
+
+/* 
+Cohesive 5-Color Palette:
+1. Deep Teal: #2d3748 (primary dark)
+2. Vibrant Teal: #4fd1c7 (primary accent)  
+3. Warm Yellow: #f6d55c (secondary accent)
+4. Sage Green: #68d391 (wordle green)
+5. Pure White: #ffffff (background/contrast)
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Main Game Container */
+.game-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2d3748 0%, #4fd1c7 50%, #68d391 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 12s ease infinite;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated Background Elements */
+.game-container::before,
+.game-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.game-container::before {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, #4fd1c7, #68d391);
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 8s;
+}
+
+.game-container::after {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(45deg, #f6d55c, #4fd1c7);
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+  animation-duration: 10s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-30px) rotate(120deg); }
+  66% { transform: translateY(20px) rotate(240deg); }
+}
+
+/* Player Name - Top Left */
+.player-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+  animation: textGlow 4s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+  50% { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); }
+}
+
+/* Opponents Section - Reduced spacing */
+.opponents-section {
+  background: transparent;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10;/* Space for player name */
+}
+
+@keyframes containerPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 15px 35px rgba(45, 55, 72, 0.2); }
+  50% { transform: scale(1.005); box-shadow: 0 20px 40px rgba(45, 55, 72, 0.25); }
+}
+
+.opponents-section h3 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.8rem;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  animation: titleFloat 3s ease-in-out infinite;
+}
+
+@keyframes titleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.opponents-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.opponent-board {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 15px;
+  min-width: 200px;
+  box-shadow: 0 8px 20px rgba(45, 55, 72, 0.15);
+  border: 2px solid rgba(79, 209, 199, 0.3);
+  transition: all 0.3s ease;
+  animation: boardFloat 4s ease-in-out infinite;
+}
+
+.opponent-board:nth-child(odd) {
+  animation-delay: 0.5s;
+}
+
+@keyframes boardFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.opponent-board:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(79, 209, 199, 0.3);
+  border-color: #4fd1c7;
+}
+
+.opponent-username {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 8px;
+  background: linear-gradient(135deg, #4fd1c7, #68d391);
+  border-radius: 10px;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.opponent-row {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 3px;
+  justify-content: center;
+}
+
+.opponent-square {
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  animation: squareShimmer 2s ease-in-out infinite;
+}
+
+@keyframes squareShimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.opponent-square.green {
+  background: rgb(0, 214, 0);
+  color: white;
+  border: 3px solid rgba(0, 214, 0, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 214, 0, 0.3);
+}
+
+.opponent-square.yellow {
+  background: #fada69;
+  color: #2d3748;
+  border: 3px solid rgba(250, 218, 105, 0.5);
+  box-shadow: 0 2px 8px rgba(250, 218, 105, 0.3);
+}
+
+.opponent-square.gray {
+  background: #6c757d;
+  color: white;
+  border: 3px solid rgba(108, 117, 125, 0.5);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.opponent-square.empty {
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(79, 209, 199, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty State Styling */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Main Game Section */
+.game-main {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(45, 55, 72, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 10;
+  animation: mainGamePulse 8s ease-in-out infinite;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@keyframes mainGamePulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(45, 55, 72, 0.2); }
+  50% { transform: scale(1.01); box-shadow: 0 25px 50px rgba(45, 55, 72, 0.25); }
+}
+
+/* Game Status Messages */
+.game-status {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-message {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #68d391, #f6d55c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: celebrationBounce 1s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(104, 211, 145, 0.5);
+}
+
+@keyframes celebrationBounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(2deg); }
+}
+
+.spell-check-error {
+  color: #e53e3e;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: rgba(229, 62, 62, 0.1);
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 2px solid rgba(229, 62, 62, 0.3);
+  animation: errorShake 0.5s ease-in-out;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.game-over-message {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #2d3748;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 15px 25px;
+  border-radius: 20px;
+  border: 2px solid rgba(108, 117, 125, 0.3);
+  animation: gameOverFade 2s ease-in-out infinite;
+}
+
+@keyframes gameOverFade {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Game Board */
+.game-board {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.square_single_row {
+  display: flex;
+  gap: 8px;
+  animation: rowSlideIn 0.5s ease-out;
+}
+
+.square_single_row:nth-child(n) {
+  animation-delay: calc(0.1s * var(--row-index, 0));
+}
+
+@keyframes rowSlideIn {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Square Styling */
+.square, .square-green, .square-yellow, .square-gray {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+}
+
+.square {
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(79, 209, 199, 0.4);
+  color: #2d3748;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.square-green {
+  background: rgb(0, 214, 0);
+  color: white;
+  border: 3px solid rgba(0, 214, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 214, 0, 0.4);
+  animation: greenGlow 2s ease-in-out infinite;
+}
+
+.square-yellow {
+  background: #fada69;
+  color: #2d3748;
+  border: 3px solid rgba(250, 218, 105, 0.5);
+  box-shadow: 0 8px 20px rgba(250, 218, 105, 0.4);
+  animation: yellowGlow 2s ease-in-out infinite;
+}
+
+.square-gray {
+  background: #6c757d;
+  color: white;
+  border: 3px solid rgba(108, 117, 125, 0.5);
+  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+  animation: grayGlow 2s ease-in-out infinite;
+}
+
+@keyframes greenGlow {
+  0%, 100% { box-shadow: 0 8px 20px rgba(0, 214, 0, 0.4); }
+  50% { box-shadow: 0 12px 30px rgba(0, 214, 0, 0.6); }
+}
+
+@keyframes yellowGlow {
+  0%, 100% { box-shadow: 0 8px 20px rgba(250, 218, 105, 0.4); }
+  50% { box-shadow: 0 12px 30px rgba(250, 218, 105, 0.6); }
+}
+
+@keyframes grayGlow {
+  0%, 100% { box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4); }
+  50% { box-shadow: 0 12px 30px rgba(108, 117, 125, 0.6); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .game-container {
+    padding: 15px;
+  }
+
+  .player-info {
+    font-size: 1.3rem;
+    top: 15px;
+    left: 15px;
+  }
+
+  .opponents-section {
+    margin-top: 50px;
+  }
+
+  .opponents-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .opponent-board {
+    min-width: 280px;
+  }
+
+  .game-main {
+    padding: 25px;
+  }
+
+  .square, .square-green, .square-yellow, .square-gray {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+
+  .square_single_row {
+    gap: 6px;
+  }
+
+  .win-message {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .opponents-section {
+    padding: 10px 15px;
+    margin-top: 45px;
+  }
+
+  .opponent-board {
+    min-width: 250px;
+    padding: 12px;
+  }
+
+  .square, .square-green, .square-yellow, .square-gray {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+  }
+
+  .game-main {
+    padding: 20px;
+  }
+
+  .player-info {
+    font-size: 1.2rem;
+    top: 10px;
+    left: 10px;
+  }
+}
+
+/* Add sparkle effects */
+.square-green::before,
+.square-yellow::before {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 0.8rem;
+  animation: sparkle 2s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import './css/Login.css';
 import { useNavigate } from 'react-router-dom';
 
 function Login({ setUsername, sock, roomCode }) {
@@ -60,8 +60,13 @@ function Login({ setUsername, sock, roomCode }) {
           <div className="letter">D</div>
           <div className="letter">L</div>
         </div>
-        <h1>Wordle Duels</h1>
-        <p>Challenge friends in real-time word battles</p>
+         <div className="logo-icon">
+          <div className="duels-letter">D</div>
+          <div className="duels-letter">U</div>
+          <div className="duels-letter">E</div>
+          <div className="duels-letter">L</div>
+          <div className="duels-letter">S</div>
+        </div>
       </div>
 
       <form className="login-form">

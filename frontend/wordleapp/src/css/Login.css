@@ -1,0 +1,397 @@
+/* Word Duels Login - Cohesive Color Scheme */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;600;700&display=swap');
+
+/* 
+Cohesive 5-Color Palette:
+1. Deep Teal: #2d3748 (primary dark)
+2. Vibrant Teal: #4fd1c7 (primary accent)  
+3. Warm Yellow: #f6d55c (secondary accent)
+4. Sage Green: #68d391 (wordle green)
+5. Pure White: #ffffff (background/contrast)
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+.login-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #2d3748 0%, #4fd1c7 50%, #68d391 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 12s ease infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated Background Elements */
+.animation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+}
+
+.circle-1 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, #4fd1c7, #68d391);
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 8s;
+}
+
+.circle-2 {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(45deg, #f6d55c, #4fd1c7);
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+  animation-duration: 10s;
+}
+
+/* Add more floating elements */
+.circle::before,
+.circle::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+.circle::before {
+  top: 20%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.circle::after {
+  bottom: 20%;
+  right: 20%;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-30px) rotate(120deg); }
+  66% { transform: translateY(20px) rotate(240deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Logo Styling */
+.logo {
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 10;
+}
+
+.logo-icon {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.letter, .duels-letter {
+  font-family: 'Fredoka One', cursive;
+  font-size: 3.5rem;
+  font-weight: 400;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  cursor: default;
+  transition: all 0.3s ease;
+}
+
+/* WORD letters - vibrant teal */
+.letter {
+  animation: subtleFloat 3s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.15s);
+}
+
+
+.letter:nth-child(1) { --i: 0; color: #f6d55c; } /* Green */
+.letter:nth-child(2) { --i: 1; color:  #68d391} /* Yellow */
+.letter:nth-child(3) { --i: 2; color: #ffffff; } /* White */
+.letter:nth-child(4) { --i: 3; color: #f6d55c; } /* Green */
+.letter:nth-child(5) { --i: 4; color: #ffffff; } /* Yellow */
+
+/* DUELS letters - Wordle colors */
+.duels-letter {
+  animation: subtleFloat 3s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.15s + 0.75s);
+}
+
+.duels-letter:nth-child(1) { --i: 0; color: #68d391; } /* Green */
+.duels-letter:nth-child(2) { --i: 1; color: #f6d55c; } /* Yellow */
+.duels-letter:nth-child(3) { --i: 2; color: #ffffff; } /* White */
+.duels-letter:nth-child(4) { --i: 3; color: #68d391; } /* Green */
+.duels-letter:nth-child(5) { --i: 4; color: #f6d55c; } /* Yellow */
+
+@keyframes subtleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.letter:hover, .duels-letter:hover {
+  transform: scale(1.1) !important;
+  animation-play-state: paused;
+}
+
+/* Form Styling */
+.login-form {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(45, 55, 72, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 10;
+  animation: formPulse 6s ease-in-out infinite;
+  min-width: 350px;
+}
+
+@keyframes formPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(45, 55, 72, 0.2); }
+  50% { transform: scale(1.01); box-shadow: 0 25px 50px rgba(45, 55, 72, 0.25); }
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 25px;
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.input-group:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.input-group i {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4fd1c7;
+  font-size: 1.2rem;
+  z-index: 2;
+  animation: iconFloat 4s ease-in-out infinite;
+}
+
+.input-group:nth-child(2) i {
+  color: #68d391;
+  animation-delay: 2s;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  50% { transform: translateY(-50%) rotate(5deg); }
+}
+
+.input-group input {
+  width: 100%;
+  padding: 18px 20px 18px 60px;
+  border: 3px solid transparent;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #4fd1c7;
+  background: white;
+  transform: scale(1.03);
+  box-shadow: 0 10px 30px rgba(79, 209, 199, 0.3);
+}
+
+.input-group:nth-child(2) input:focus {
+  border-color: #68d391;
+  box-shadow: 0 10px 30px rgba(104, 211, 145, 0.3);
+}
+
+.input-group input::placeholder {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+/* Button Styling */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slideInRight 0.6s ease-out;
+  animation-delay: 0.4s;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.primary-btn, .secondary-btn {
+  width: 100%;
+  padding: 18px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #4fd1c7, #68d391);
+  color: white;
+  box-shadow: 0 10px 25px rgba(79, 209, 199, 0.4);
+}
+
+.primary-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(79, 209, 199, 0.5);
+  animation: buttonWiggle 0.6s ease-in-out infinite;
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #f6d55c, #68d391);
+  color: #2d3748;
+  box-shadow: 0 10px 25px rgba(246, 213, 92, 0.4);
+  font-weight: 700;
+}
+
+.secondary-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(246, 213, 92, 0.5);
+  animation: buttonWiggle 0.6s ease-in-out infinite;
+}
+
+@keyframes buttonWiggle {
+  0%, 100% { transform: translateY(-3px) scale(1.02) rotate(0deg); }
+  50% { transform: translateY(-3px) scale(1.02) rotate(1deg); }
+}
+
+.primary-btn::before, .secondary-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.primary-btn:hover::before, .secondary-btn:hover::before {
+  left: 100%;
+}
+
+.divider {
+  text-align: center;
+  color: #2d3748;
+  font-weight: 500;
+  position: relative;
+  margin: 10px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4fd1c7, transparent);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 20px;
+  }
+  
+  .logo-icon {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .letter, .duels-letter {
+    font-size: 2.5rem;
+  }
+  
+  .login-form {
+    padding: 30px 25px;
+    min-width: 300px;
+  }
+}
+
+/* Additional playful animations */
+.login-form:hover {
+  animation: none; /* Remove rainbow effect */
+}
+
+/* Button icon animations */
+.primary-btn i, .secondary-btn i {
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
