@@ -80,7 +80,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
     <div className="game-container">
       {/* Player Name - Top Left */}
       <div className="player-info">{username}</div>
-
+    <div className='board-container'>
       {/* Opponents Section */}
       <div className="opponents-section">
         {Object.keys(opponentBoards).length === 0 ? (
@@ -143,8 +143,9 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
           <Row key={6} uuid={uuid} sock={sock} roomCode={roomCode} isActive={6 === round} round={updateRound} answer={word} updateGameState={updateGameState} sethasWon={sethasWon} hasWon={hasWon} updateSpellCheck={updateSpellCheck} rowIndex={6} gameEnding = {gameEnding}/>
         </div>
 
-   
 
+        
+      </div>
       </div>
       
            {isHost && gameEnding &&(
@@ -163,6 +164,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
     </div>
   )
 }
+
 
 
 function OpponentBoard({username, rows, hasWon}) {
@@ -229,6 +231,11 @@ function Square({value, colorArray}) {
     })
   );
 }
+
+
+
+
+
 
 function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, sethasWon, updateSpellCheck, rowIndex, gameEnding}) {
   const [value, setValue] = useState(['', '', '', '', '']);

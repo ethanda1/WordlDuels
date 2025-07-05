@@ -148,7 +148,9 @@ echo.on('connection', function(conn) {
 
         //restarting game
         else if (data.type === 'play-again'){
-            broadcastRoom(data.roomcode, 'play_again', generateWord())
+            let newWord = generateWord()
+            rooms[data.roomcode].forEach(user => {user.word = newWord});
+            broadcastRoom(data.roomcode, 'play_again', newWord)
         }
 
         
@@ -167,13 +169,39 @@ echo.on('connection', function(conn) {
 
             console.log(`User ${leavingUser ? leavingUser.username : 'unknown'} left room ${roomID}`);
 
+            //changing hosts
+            if(leavingUser && rooms[roomID][0].userID === leavingUser.userID){
+                console.log("new host");
+                console.log(rooms[roomID] + ': ' + rooms[roomID].length)
+                if (rooms[roomID].length >= 2) {
+                    rooms[roomID][1].conn.write(JSON.stringify({
+                        type: 'make_host',
+                    }));
+                }
+            }
             rooms[roomID] = rooms[roomID].filter(user => user.conn.id !== conn.id);
+
+       
+            if (rooms[roomID].length === 1) {
+                let newWord = generateWord()
+                rooms[roomID][0].word = newWord
+                console.log("1 user in room");
+                rooms[roomID][0].conn.write(JSON.stringify({
+                    type: 'return_room',
+                    message: newWord
+                }));
+            }
 
             if (rooms[roomID].length === 0) {
                 delete rooms[roomID];
             } else if (leavingUser) {
                 broadcastRoom(roomID, 'user_left', { username: leavingUser.username, userID: leavingUser.userID });
             }
+            
+
+            
+            
+      
         });
     }); 
 });

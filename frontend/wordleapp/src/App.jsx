@@ -20,6 +20,7 @@ function App() {
   const [invalidRoomcodeMsg, setinvalidRoomcodeMsg] = useState('')
   const [gameEnding, setgameEnding] = useState(false);
   const [winner, setWinner] = useState(''); //winner's UUID
+  
 
   useEffect(() => {
     const sock = new SockJS('http://localhost:9999/echo');
@@ -95,6 +96,21 @@ function App() {
           });
         }
         if (data.type === 'play_again'){
+          setWord(data.message);
+          setgameStarted(false);
+          setgameEnding(false);
+          setWinner('')
+          setcolorArray([])
+          setUserUpdateColor(null);
+        }
+
+        if (data.type === 'make_host'){
+          setisHost(true);
+          console.log("isHost:", username);
+        }
+
+        //handles edge case where there is one player left in game
+        if(data.type === 'return_room'){
           setWord(data.message);
           setgameStarted(false);
           setgameEnding(false);
