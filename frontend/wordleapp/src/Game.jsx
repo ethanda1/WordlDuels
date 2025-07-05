@@ -11,6 +11,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
   const navigate = useNavigate();
 
   console.log('haswon' + hasWon);
+  console.log(word);
 
 
 
@@ -24,17 +25,19 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
 
   // Initialize opponent boards when users change
   useEffect(() => {
-    const newBoards = {};
-    Object.keys(users).forEach(userUuid => {
-      if (userUuid !== uuid) { // Don't include current user
-        newBoards[userUuid] = {
-          username: users[userUuid],
-          rows: [] // Will store arrays of color arrays for each completed row
-        };
-      }
-    });
-    setOpponentBoards(newBoards);
-  }, [users, uuid]);
+    if (gameStarted) {
+      const newBoards = {};
+      Object.keys(users).forEach(userUuid => {
+        if (userUuid !== uuid) {
+          newBoards[userUuid] = {
+            username: users[userUuid],
+            rows: []
+          };
+        }
+      });
+      setOpponentBoards(newBoards);
+    }
+  }, [gameStarted, users, uuid]);
 
   // Update opponent boards when color updates come in
   useEffect(() => {
@@ -47,7 +50,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
         }
       }));
     }
-  }, [userUpdateColor, colorArray, uuid]);
+}, [userUpdateColor, colorArray, uuid]);
 
   const updateRound = () => {
     setRound(round => round + 1)
@@ -110,7 +113,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
       {/* Main Game Section */}
       <div className="game-main">
         <div className="game-status">
-          {hasWon && (
+          {(uuid === winner) && (
             <div className="win-message">
               You won!
             </div>
@@ -124,7 +127,7 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
             <div className="game-over-message">You lost</div>
           )}
 
-          {gameEnding && (!hasWon) && (
+          {gameEnding && !(uuid === winner)  && (
             <div className="game-over-message"> {users[winner]} won. The word was "{word}"</div>
           )}
 
@@ -170,6 +173,7 @@ function OpponentBoard({username, rows, hasWon}) {
   for (let i = 0; i < 6; i++) {
     displayRows.push(rows[i] || emptyRow);
   }
+  console.log(displayRows);
 
   return (
     <div className={`opponent-board ${hasWon ? 'has-won' : ''}`}>
@@ -226,7 +230,7 @@ function Square({value, colorArray}) {
   );
 }
 
-function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, sethasWon, updateSpellCheck, rowIndex, gameEnding}){
+function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, hasWon, sethasWon, updateSpellCheck, rowIndex, gameEnding}) {
   const [value, setValue] = useState(['', '', '', '', '']);
   const [index, setIndex] = useState(0); // current input index
   const answerArray= answer.toUpperCase().split('');
@@ -242,7 +246,7 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
       }
     }
     return map;
-  }, [answer]);
+  }, [answerArray]);
 
   useEffect(() => {
     if (!isActive){
@@ -271,7 +275,6 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
 
       if(e.key === 'Enter' && index === 5 && isAWord){
         updateSpellCheck(1);
-        let counter = 0; //keeps track of green squares
         const newColorArray = ['empty', 'empty', 'empty', 'empty', 'empty']
         const copy = JSON.parse(JSON.stringify(answerLetterMap)); 
         // work with copy instead of trying to reset answerLetterMap
@@ -282,7 +285,6 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
               if (copy[value[i]][j] === i) {
                 copy[value[i]].splice(j, 1);
                 newColorArray[i] = 'green';
-                counter++;
                 break;
               }
             }
@@ -330,8 +332,9 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
           roomcode: roomCode
         })
       );
+      sethasWon(false);
     }
-    sethasWon(false);
+
     if (!gameEnding){
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);

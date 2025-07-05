@@ -3,10 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './css/Room.css'; 
 
-function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
+function Room({ sock, usernames, isHost, gameStarted}) {
     const navigate = useNavigate();
     const { roomCode } = useParams();
-    const [players, setPlayers] = useState([]);
     const [copied, setCopied] = useState(false);
     
     useEffect(()=> {
@@ -18,7 +17,6 @@ function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
   
     
     const handlePlay = () => {
-        // In a real app, this would emit a socket event to start the game
         console.log('Starting game...');
         sock.send(
             JSON.stringify({
@@ -53,7 +51,7 @@ function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
             </div>
             
             <div className="players-section">
-                <h2>Players ({usernames.length})</h2>
+                <h2>Players {usernames.length}/6</h2>
                 <div className="players-list">
                     {usernames.length > 0 ? (
                         usernames.map((username, index) => (
@@ -75,14 +73,19 @@ function Room({ sock, setUsername, usernames, isHost, gameStarted}) {
             </div>
             
             <div className="action-section">
-                {isHost && (  
-                <button 
-                    className="play-button"
-                    onClick={handlePlay}
-                    disabled={usernames.length < 2}
-                >
-                    Start Game
-                </button>)}
+                {isHost ? (
+                    <button 
+                        className="play-button"
+                        onClick={handlePlay}
+                        disabled={usernames.length < 2}
+                    >
+                        Start
+                    </button>
+                ) : (
+                    <div className="waiting-for-host">
+                        Waiting for host to start the game...
+                    </div>
+                )}
               
                 {usernames.length < 2 && (
                     <p className="min-players-warning">Need at least 2 players to start</p>

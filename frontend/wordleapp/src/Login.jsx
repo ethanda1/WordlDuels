@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
   const [usernameInput, setUsernameInput] = useState('');
   const [roomCodeInput, setRoomCodeInput] = useState('');
+  const [invalidUsernameMsg, setInvalidUsernameMsg] = useState('');
 
   const navigate = useNavigate();
   
@@ -13,6 +14,12 @@ function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
     navigate(`${roomCode}`)
   },[roomCode])
 
+  const handleupdateUsername = (e) => {
+    if (e.target.value.length > 20) {
+      return;
+    }
+    setUsernameInput(e.target.value); 
+  }
 
   //joining room
   const handleJoin = (e) => {
@@ -33,7 +40,11 @@ function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
   //create room
   const handleCreate = (e) => {
     e.preventDefault();
-    if (!usernameInput) return;
+    if (!usernameInput){
+      setInvalidUsernameMsg('Please enter a username');
+      return;
+
+    } 
 
     setUsername(usernameInput);
 
@@ -76,7 +87,7 @@ function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
             type="text"
             placeholder="Your Name"
             value={usernameInput}
-            onChange={(e) => setUsernameInput(e.target.value)}
+            onChange={handleupdateUsername}
           />
         </div>
 
@@ -91,10 +102,17 @@ function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
         </div>
 
         <div className="btn-group">
-          <button className="primary-btn" onClick={handleJoin}>
-            <i className="fas fa-sign-in-alt"></i>
-            Join Room
-          </button>
+         {roomCodeInput.length > 4 ? (
+              <button className="primary-btn" onClick={handleJoin}>
+                <i className="fas fa-sign-in-alt"></i>
+                Join Room
+              </button>
+            ) : (
+              <button className="primary-btn-disabled" disabled>
+                <i className="fas fa-sign-in-alt"></i>
+                Join Room
+              </button>
+            )}
 
           <div className = "invalid-msg">{invalidRoomcodeMsg}</div>
 
@@ -104,6 +122,7 @@ function Login({ setUsername, sock, roomCode, invalidRoomcodeMsg }) {
             <i className="fas fa-plus-circle"></i>
             Create a Room
           </button>
+          <div className="invalid-msg">{invalidUsernameMsg}</div>
         </div>
       </form>
     </div>

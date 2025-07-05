@@ -1,5 +1,5 @@
 
-const words = require('./words.json');
+const pickedwords = require('./pickedwords.json');
 var http = require('http');
 var sockjs = require('sockjs');
 
@@ -50,9 +50,16 @@ echo.on('connection', function(conn) {
                 if (!(roomcode in rooms)){
                     conn.write(JSON.stringify({
                         type: 'invalid_roomcode',
-                        message: 're-enter roomcode',
+                        message: 'Invalid room code, please try again',
                     }));
                 return;
+                }
+                if(rooms[roomcode].length >= 6){
+                     conn.write(JSON.stringify({
+                        type: 'max_users_reached',
+                        message: 'Room is full, please try another room',
+                    }));
+                    return;
                 }
                 let UUID = getUniqueUserID(roomcode)
                 rooms[roomcode].push(
@@ -150,13 +157,26 @@ echo.on('connection', function(conn) {
         else {
             console.log(`Unhandled data type: ${data.type}`);
         }
-    });
+    }); 
 
     conn.on('close', function() {
         console.log(`Connection closed: ${conn.id}`);
-    });
-});
 
+        Object.keys(rooms).forEach(roomID => {
+            const leavingUser = rooms[roomID].find(user => user.conn.id === conn.id);
+
+            console.log(`User ${leavingUser ? leavingUser.username : 'unknown'} left room ${roomID}`);
+
+            rooms[roomID] = rooms[roomID].filter(user => user.conn.id !== conn.id);
+
+            if (rooms[roomID].length === 0) {
+                delete rooms[roomID];
+            } else if (leavingUser) {
+                broadcastRoom(roomID, 'user_left', { username: leavingUser.username, userID: leavingUser.userID });
+            }
+        });
+    }); 
+});
 
 function broadcastRoom(roomID, type, message){    
     if (roomID in rooms){
@@ -203,8 +223,8 @@ function getUniqueUserID(roomID) {
 }
 
 function generateWord() {
-    const randomIndex = Math.floor(Math.random() * words.length);
-    return words[randomIndex];
+    const randomIndex = Math.floor(Math.random() * pickedwords.length);
+    return pickedwords[randomIndex];
 }
 
 

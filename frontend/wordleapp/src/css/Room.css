@@ -22,12 +22,24 @@ Using the same 5-color palette:
   overflow-x: hidden;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
 
+.waiting-for-host {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ffffff;
+  padding: 18px 28px;
+  border-radius: 14px;
+  margin: 0 auto;
+  margin-top: 10px;
+  max-width: 400px;
+  font-family: 'Fredoka One', cursive;
+  animation: waitingBounce 3s infinite;
+}
+@keyframes waitingBounce {
+  0%   { transform: translateY(0);}
+  50%  { transform: translateY(-5px);}
+  100% { transform: translateY(0);}
+}
 /* Floating background elements */
 .room-container::before,
 .room-container::after {
@@ -262,39 +274,26 @@ Using the same 5-color palette:
   left: 100%;
 }
 
-.player-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4fd1c7, #68d391);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 5px 15px rgba(79, 209, 199, 0.3);
-  animation: avatarPulse 3s ease-in-out infinite;
-}
+
 
 @keyframes avatarPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
 }
 
-.avatar-placeholder {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-}
+
 
 .player-name {
   font-size: 1.1rem;
   font-weight: 600;
   color: #2d3748;
   flex-grow: 1;
+  font-family: 'Fredoka One', cursive;
+  font-weight: 300;
 }
 
 .host-badge {
-  background: linear-gradient(135deg, #f6d55c, #68d391);
+  background: linear-gradient(135deg, #f6d55c);
   color: #2d3748;
   padding: 6px 12px;
   border-radius: 20px;
@@ -352,17 +351,18 @@ Using the same 5-color palette:
 }
 
 .play-button {
-  background: linear-gradient(135deg, #4fd1c7, #68d391);
-  color: white;
-  border: none;
-  padding: 18px 40px;
+  background: linear-gradient(135deg, #ffffff, #ffffff);
+  color: #00b6ad;
+  border: 3px solid #00b6ad;
+  padding: 10px 20px;
   border-radius: 25px;
-  font-size: 1.3rem;
+  font-size: 2rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(79, 209, 199, 0.4);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka One', cursive;
+  font-weight: 50;
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
@@ -381,10 +381,9 @@ Using the same 5-color palette:
 }
 
 .play-button:disabled {
-  background: linear-gradient(135deg, #cbd5e0, #a0aec0);
+  opacity: 0.2;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 0 5px 15px rgba(160, 174, 192, 0.3);
 }
 
 .play-button::before {

@@ -35,11 +35,8 @@ body {
   overflow: hidden;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+
+
 
 /* Animated Background Elements */
 .animation-container {
@@ -174,16 +171,14 @@ body {
 
 /* Form Styling */
 .login-form {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 30px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(45, 55, 72, 0.2);
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 60px 50px;
   position: relative;
   z-index: 10;
   animation: formPulse 6s ease-in-out infinite;
-  min-width: 350px;
+  min-width: 420px;
+  max-width: 520px;
+  margin: 0 auto;
+  border-radius: 18px;         /* More square */
 }
 
 @keyframes formPulse {
@@ -228,13 +223,12 @@ body {
 }
 
 .input-group input {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;           /* Bigger font */
+  padding: 28px 20px 28px 60px; /* Bigger input */
+  border-radius: 12px;         /* More square */
   width: 100%;
-  padding: 18px 20px 18px 60px;
   border: 3px solid transparent;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   transition: all 0.3s ease;
   position: relative;
 }
@@ -261,7 +255,7 @@ body {
 .btn-group {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 5px;
   animation: slideInRight 0.6s ease-out;
   animation-delay: 0.4s;
 }
@@ -271,12 +265,12 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
-.primary-btn, .secondary-btn {
+.primary-btn, .primary-btn-disabled, .secondary-btn {
   width: 100%;
-  padding: 18px 30px;
+  padding: 24px 30px;
   border: none;
-  border-radius: 25px;
-  font-size: 1.1rem;
+  border-radius: 12px;
+  font-size: 1.3rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -286,13 +280,21 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka One', cursive;
+  font-weight: 300;
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #4fd1c7, #68d391);
+  background: linear-gradient(135deg, #37b3a8, #39724f);
   color: white;
   box-shadow: 0 10px 25px rgba(79, 209, 199, 0.4);
+}
+.primary-btn-disabled{
+  background: linear-gradient(135deg, #4fd1c7, #40cc76);
+  opacity: 0.6;
+  color: white;
+  box-shadow: 0 10px 25px rgba(79, 209, 199, 0.4);
+  cursor: not-allowed;
 }
 
 .primary-btn:hover {
@@ -302,10 +304,9 @@ body {
 }
 
 .secondary-btn {
-  background: linear-gradient(135deg, #f6d55c, #68d391);
-  color: #2d3748;
-  box-shadow: 0 10px 25px rgba(246, 213, 92, 0.4);
-  font-weight: 700;
+ background: linear-gradient(135deg, #0fafa2, #20b85a);
+  color: white;
+  box-shadow: 0 10px 25px rgba(79, 209, 199, 0.4);
 }
 
 .secondary-btn:hover {
@@ -339,7 +340,6 @@ body {
   color: #2d3748;
   font-weight: 500;
   position: relative;
-  margin: 10px 0;
 }
 
 .divider::before,
@@ -376,8 +376,13 @@ body {
   }
   
   .login-form {
-    padding: 30px 25px;
-    min-width: 300px;
+    min-width: 90vw;
+    max-width: 98vw;
+    padding: 30px 10px;
+  }
+  .input-group input {
+    font-size: 1.1rem;
+    padding: 18px 12px 18px 48px;
   }
 }
 
@@ -395,6 +400,7 @@ body {
   color: red;
   margin: 5px;
 }
+
 
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0px); }

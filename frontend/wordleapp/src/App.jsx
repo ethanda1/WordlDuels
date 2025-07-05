@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import SockJS from 'sockjs-client/dist/sockjs';
 import Login from './Login';
 import Room from './Room';
@@ -20,7 +20,6 @@ function App() {
   const [invalidRoomcodeMsg, setinvalidRoomcodeMsg] = useState('')
   const [gameEnding, setgameEnding] = useState(false);
   const [winner, setWinner] = useState(''); //winner's UUID
-  const [playAgain, setplayAgain] = useState(false);
 
   useEffect(() => {
     const sock = new SockJS('http://localhost:9999/echo');
@@ -77,10 +76,23 @@ function App() {
         if (data.type === 'invalid_roomcode'){
           setinvalidRoomcodeMsg('Invalid room code, please try again')
         }
-        
+        if (data.type === 'max_users_reached'){
+          setinvalidRoomcodeMsg('Room is full, please try another room')
+        }
+
         if (data.type === 'end_game'){
           setgameEnding(true);
           setWinner(data.message)
+        }
+
+        if (data.type === 'user_left') {
+          console.log('User left:', data.message.username);
+          setUsernames(prevUsernames => prevUsernames.filter(name => name !== data.message.username));
+          setUsers(prevUsers => {
+            const newUsers = { ...prevUsers };
+            delete newUsers[data.message.userID];
+            return newUsers;
+          });
         }
         if (data.type === 'play_again'){
           setWord(data.message);
@@ -88,6 +100,7 @@ function App() {
           setgameEnding(false);
           setWinner('')
           setcolorArray([])
+          setUserUpdateColor(null);
         }
       };
     }, [sock]);
