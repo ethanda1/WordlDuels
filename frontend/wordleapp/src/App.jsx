@@ -23,7 +23,7 @@ function App() {
   
 
   useEffect(() => {
-    const sock = new SockJS('https://3.149.252.70:9999/echo');
+    const sock = new SockJS('https://3.149.252.70:80/echo');
     setSock(sock);
 
 
