@@ -13,7 +13,18 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
   console.log('haswon' + hasWon);
   console.log(word);
 
-
+useEffect(() => {
+  if (hasWon) {
+    sock.send(
+      JSON.stringify({
+        type: 'game_end',
+        uuid: uuid,
+        roomcode: roomCode
+      })
+    );
+    sethasWon(false);
+  }
+}, [hasWon]);
 
 
 
@@ -56,9 +67,8 @@ function Game({sock, username, userUpdateColor, colorArray, users, word, uuid, r
     setRound(round => round + 1)
   }
 
-  const updateGameState = () => {
-    sethasWon(true);
-  }
+  const updateGameState = () => sethasWon(true);
+
   
   const updateSpellCheck = (boolean) => {
     setspellCheck(boolean);
@@ -331,16 +341,6 @@ function Row({isActive, roomCode, uuid, sock, round, answer, updateGameState, ha
       }
     };
     
-    if (hasWon) {
-      sock.send(
-        JSON.stringify({
-          type: 'game_end',
-          uuid: uuid,
-          roomcode: roomCode
-        })
-      );
-      sethasWon(false);
-    }
 
     if (!gameEnding){
       window.addEventListener('keydown', handleKeyDown);
