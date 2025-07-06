@@ -23,7 +23,7 @@ function App() {
   
 
   useEffect(() => {
-    const sock = new SockJS('https://3.149.252.70:80/echo');
+    const sock = new SockJS('https://api.wordlduels.com/echo');
     setSock(sock);
 
 
