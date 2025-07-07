@@ -1,17 +1,9 @@
-# WordleApp
-To run the local development, run these in terminal:
+# WordlDuels
 
-git clone https://github.com/ethanda1/WordleApp.git
 
-cd frontend/wordleapp 
+A competitive multiplayer Wordle game. Race your friends in real-time to solve the Wordle first!
 
-npm i
+Play now: https://wordlduels.com
 
-npm run dev 
-
-cd ../../backend
-
-npm i
-
-npm start
-
+Built with React, Node.js, Express, and SockJS for real-time gameplay.
+See the code: github.com/ethanda1/WordleApp
