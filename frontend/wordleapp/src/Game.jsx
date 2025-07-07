@@ -22,7 +22,6 @@ useEffect(() => {
         roomcode: roomCode
       })
     );
-    sethasWon(false);
   }
 }, [hasWon]);
 
@@ -80,8 +79,9 @@ useEffect(() => {
         type: 'play-again',
         roomcode: roomCode
     }))
-      
 
+    sethasWon(false);
+    setRound(1);
   }
 
   console.log(spellCheck)
